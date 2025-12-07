@@ -1,23 +1,23 @@
-export const getPosts = async (queryParams) => {
+export const getRecipes = async (queryParams) => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/posts?` +
+    `${import.meta.env.VITE_BACKEND_URL}/recipes?` +
       new URLSearchParams(queryParams)
   );
   return await res.json();
 };
-export const createPost = async (token, post) => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
+export const createRecipe = async (token, recipe) => {
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/recipes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(post),
+    body: JSON.stringify(recipe),
   });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(
-      `Create post failed: ${res.status} ${res.statusText} - ${text}`
+      `Create recipe failed: ${res.status} ${res.statusText} - ${text}`
     );
   }
   return await res.json();
