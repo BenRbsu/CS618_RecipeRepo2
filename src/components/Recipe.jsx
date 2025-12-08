@@ -1,23 +1,27 @@
 import PropTypes from 'prop-types'
 import { User } from './User.jsx'
+import { Link } from 'react-router-dom'
+import slug from 'slug'
 
-export function Recipe({ title, ingredients, instructions, imageURL, author: userId }) {
+export function Recipe({ title, ingredients, instructions, imageURL, author, _id, fullRecipe = false  }) {
   return (
     <article>
-      <h3>{title}</h3>
-      {imageURL && <img src={imageURL} alt={title} style={{ maxWidth: '100%', height: 'auto' }} />}
-      <div>
-        <strong>Ingredients:</strong>
-        <p>{ingredients}</p>
-      </div>
-      <div>
-        <strong>Instructions:</strong>
-        <p>{instructions}</p>
-      </div>
-      {userId && (
+      {fullRecipe ? (
+        <h3>{title}</h3>
+      ) : (
+        <Link to={`/recipes/${_id}/${slug(title)}`}>
+          <h3>{title}</h3>
+        </Link>
+      )}
+      {fullRecipe && <div>{ingredients} </div>}
+       <br />
+      {fullRecipe && <div>{instructions} </div>}
+       <br />
+      {fullRecipe && imageURL && <img src={imageURL} alt={title} />}
+      {author && (
         <em>
-          <br />
-          By <User id={userId} />
+          {fullRecipe && <br />}
+          Written by <User id={author} />
         </em>
       )}
     </article>
@@ -29,5 +33,8 @@ Recipe.propTypes = {
   instructions: PropTypes.string,
   imageURL: PropTypes.string,
   author: PropTypes.string,
+    _id: PropTypes.string.isRequired,
+  fullRecipe: PropTypes.bool
+
 }
  
