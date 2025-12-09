@@ -1,13 +1,32 @@
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { Header } from '../components/Header.jsx'
 import { Recipe } from '../components/Recipe.jsx'
 import { getRecipeById } from '../api/recipes.js'
+import { RecipeStats } from '../components/RecipeStats.jsx'
+import { useEffect, useState } from 'react'
+import { postTrackEvent } from '../api/events.js'
 import { getUserInfo } from '../api/users.js'
 import { Helmet } from 'react-helmet-async'
 
 export function ViewRecipe({ recipeId }) {
+  const [session, setSession] = useState()
+  const trackEventMutation = useMutation({
+    mutationFn: (action) => postTrackEvent({ recipeId, action, session }),
+    onSuccess: (data) => setSession(data?.session),
+  })
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      trackEventMutation.mutate('startView')
+      timeout = null
+    }, 1000)
+    return () => {
+      if (timeout) clearTimeout(timeout)
+      else trackEventMutation.mutate('endView')
+    }
+  }, [])
+  
   const recipeQuery = useQuery({
     queryKey: ['recipe', recipeId],
     queryFn: () => getRecipeById(recipeId),
@@ -51,7 +70,14 @@ export function ViewRecipe({ recipeId }) {
       <Link to='/'>Back to main page</Link>
       <br />
       <hr />
-      {recipe ? <Recipe {...recipe} fullRecipe /> : `Recipe with id${recipeId} not found.`}
+      {recipe ? (
+        <div>
+          <Recipe {...recipe} fullRecipe />
+          <hr /> <RecipeStats recipeId={recipeId} />
+        </div>
+      ) : (
+        `Recipe with id${recipeId} not found.`
+      )}
     </div>
   )
 }
