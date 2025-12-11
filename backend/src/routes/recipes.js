@@ -6,7 +6,7 @@ import {
   createRecipe,
   updateRecipe,
   deleteRecipe,
-
+  toggleLike,
 } from '../services/recipes.js'
 
 import { requireAuth } from '../middleware/jwt.js'
@@ -68,6 +68,16 @@ export function recipesRoutes(app) {
       return res.status(204).end()
     } catch (err) {
       console.error('error deleting recipe', err)
+      return res.status(500).end()
+    }
+  })
+  app.post('/api/v1/recipes/:id/like', requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params
+      const { liked, recipe } = await toggleLike(id, req.auth.sub)
+      return res.json({ liked, likesCount: recipe.likesCount, recipe })
+    } catch (err) {
+      console.error('error liking recipe', err)
       return res.status(500).end()
     }
   })

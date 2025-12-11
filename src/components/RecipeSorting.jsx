@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 export function RecipeSorting({
-  fields = [],
+  fields = ['createdAt', 'likesCount'],
   value,
   onChange,
   orderValue,
@@ -17,7 +17,7 @@ export function RecipeSorting({
       >
         {fields.map((field) => (
           <option key={field} value={field}>
-            {field}
+            {field === 'likesCount' ? 'Likes' : field === 'createdAt' ? 'Date' : field}
           </option>
         ))}
       </select>

@@ -35,3 +35,12 @@ export async function updateRecipe(userId, recipeId, { title, ingredients, instr
 export async function deleteRecipe(userId, recipeId) {
   return await Recipe.deleteOne({ _id: recipeId, author: userId })
 }
+
+export async function toggleLike(recipeId, userId) {
+  const added = await Recipe.updateOne({ _id: recipeId, likedBy: { $ne: userId } }, { $addToSet: { likedBy: userId }, $inc: { likesCount: 1 } });
+  if (added.modifiedCount === 0) { // already liked -> remove
+    await Recipe.updateOne({ _id: recipeId }, { $pull: { likedBy: userId }, $inc: { likesCount: -1 } });
+    return { liked: false, recipe: await Recipe.findById(recipeId) };
+  } 
+return { liked: true, recipe: await Recipe.findById(recipeId) };
+}

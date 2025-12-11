@@ -7,6 +7,8 @@ export const RECIPE_FIELDS = gql`
     ingredients
     instructions
     imageURL
+    likesCount
+    likedBy
     tags
     updatedAt
     createdAt
@@ -38,6 +40,15 @@ export const CREATE_RECIPE = gql`
     createRecipe(title: $title, ingredients: $ingredients, instructions: $instructions, imageURL: $imageURL, tags: $tags) {
       id
       title
+    }
+  }
+`
+
+export const LIKE_RECIPE = gql`
+  mutation likeRecipe($id: ID!) {
+    likeRecipe(id: $id) {
+      id
+      likesCount
     }
   }
 `

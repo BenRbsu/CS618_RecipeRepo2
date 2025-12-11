@@ -5,6 +5,8 @@ const recipeSchema = new Schema({
   ingredients: String,
   instructions: String,
   imageURL: String,
+  likedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  likesCount: { type: Number, default: 0 },
   tags: [String],
 },
   { timestamps: true },

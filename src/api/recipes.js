@@ -28,3 +28,20 @@ export const createRecipe = async (token, recipe) => {
   }
   return await res.json();
 };
+
+export const likeRecipe = async (token, recipeId) => {
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/recipes/${recipeId}/like`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(
+      `Like recipe failed: ${res.status} ${res.statusText} - ${text}`
+    );
+  }
+  return await res.json();
+};

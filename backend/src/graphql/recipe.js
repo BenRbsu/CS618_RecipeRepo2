@@ -7,6 +7,8 @@ author: User
 ingredients: String
 instructions: String
 imageURL: String
+likedBy: [ID!]
+likesCount: Int
 tags: [String!]
 createdAt: Float
 updatedAt: Float
@@ -14,6 +16,9 @@ updatedAt: Float
 `
 export const recipeResolver = {
   Recipe: {
+    id: (recipe) => recipe._id || recipe.id,
+    likesCount: (recipe) => recipe.likesCount || 0,
+    likedBy: (recipe) => recipe.likedBy || [],
     author: async (recipe) => {
       return await getUserInfoById(recipe.author)
     },

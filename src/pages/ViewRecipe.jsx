@@ -3,14 +3,16 @@ import PropTypes from 'prop-types'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { Header } from '../components/Header.jsx'
 import { Recipe } from '../components/Recipe.jsx'
-import { getRecipeById } from '../api/recipes.js'
+import { getRecipeById, likeRecipe } from '../api/recipes.js'
 import { RecipeStats } from '../components/RecipeStats.jsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { postTrackEvent } from '../api/events.js'
 import { getUserInfo } from '../api/users.js'
 import { Helmet } from 'react-helmet-async'
+import { AuthContext } from '../contexts/AuthContext.jsx'
 
 export function ViewRecipe({ recipeId }) {
+  const { token } = useContext(AuthContext)
   const [session, setSession] = useState()
   const trackEventMutation = useMutation({
     mutationFn: (action) => postTrackEvent({ recipeId, action, session }),
@@ -39,6 +41,18 @@ export function ViewRecipe({ recipeId }) {
     enabled: Boolean(recipe?.author),
   })
   const userInfo = userInfoQuery.data ?? {}
+
+  const likeRecipeMutation = useMutation({
+    mutationFn: () => likeRecipe(token, recipeId),
+    onSuccess: () => {
+      recipeQuery.refetch()
+    },
+  })
+
+  const handleLike = () => {
+    if (!token) return
+    likeRecipeMutation.mutate()
+  }
 
   function truncate(str, max = 160) {
     if (!str) return str
@@ -72,7 +86,7 @@ export function ViewRecipe({ recipeId }) {
       <hr />
       {recipe ? (
         <div>
-          <Recipe {...recipe} fullRecipe id={recipeId} author={userInfo} />
+          <Recipe {...recipe} fullRecipe id={recipeId} author={userInfo} onLike={handleLike} />
           <hr /> <RecipeStats recipeId={recipeId} />
         </div>
       ) : (

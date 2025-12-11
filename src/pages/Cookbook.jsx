@@ -7,9 +7,8 @@ import { Helmet } from 'react-helmet-async'
 //import { useQuery } from "@tanstack/react-query";
 //import { getRecipes } from "../api/recipes.js";
 import { useQuery as useGraphQLQuery } from '@apollo/client/react/index.js'
-import { GET_RECIPES, GET_RECIPES_BY_AUTHOR  } from '../api/graphql/recipes.js'
-
-import { useState } from "react";
+import { GET_RECIPES, GET_RECIPES_BY_AUTHOR } from '../api/graphql/recipes.js'
+import { useState, useEffect } from "react";
 
 export function Cookbook() {
   const [author, setAuthor] = useState("");
@@ -26,7 +25,12 @@ export function Cookbook() {
   const recipesQuery = useGraphQLQuery(author ? GET_RECIPES_BY_AUTHOR : GET_RECIPES, {
     variables: author ? { author, options: { sortBy, sortOrder } } : { options: { sortBy, sortOrder } },
   })
-  
+
+  // Refetch recipes when the page mounts or when filter/sort changes
+  useEffect(() => {
+    recipesQuery.refetch()
+  }, [author, sortBy, sortOrder, recipesQuery])
+
   const recipes = recipesQuery.data?.recipesByAuthor ?? recipesQuery.data?.recipes ?? []
   return (
     <div style={{ padding: 8 }}>
@@ -50,7 +54,7 @@ export function Cookbook() {
       />
       <br />
       <RecipeSorting
-        fields={["createdAt", "updatedAt"]}
+        fields={["createdAt", "updatedAt", "likesCount"]}
         value={sortBy}
         onChange={(value) => setSortBy(value)}
         orderValue={sortOrder}
