@@ -3,13 +3,13 @@ import { User } from './User.jsx'
 import { Link } from 'react-router-dom'
 import slug from 'slug'
 
-export function Recipe({ title, ingredients, instructions, imageURL, author, _id, fullRecipe = false  }) {
+export function Recipe({ title, ingredients, instructions, imageURL, author, id, fullRecipe = false  }) {
   return (
     <article>
       {fullRecipe ? (
         <h3>{title}</h3>
       ) : (
-        <Link to={`/recipes/${_id}/${slug(title)}`}>
+        <Link to={`/recipes/${id}/${slug(title)}`}>
           <h3>{title}</h3>
         </Link>
       )}
@@ -21,7 +21,7 @@ export function Recipe({ title, ingredients, instructions, imageURL, author, _id
       {author && (
         <em>
           {fullRecipe && <br />}
-          Written by <User id={author} />
+          Written by <User {...author} />
         </em>
       )}
     </article>
@@ -32,8 +32,8 @@ Recipe.propTypes = {
   ingredients: PropTypes.string,
   instructions: PropTypes.string,
   imageURL: PropTypes.string,
-  author: PropTypes.string,
-    _id: PropTypes.string.isRequired,
+  author: PropTypes.shape(User.propTypes),
+  id: PropTypes.string.isRequired,
   fullRecipe: PropTypes.bool
 
 }

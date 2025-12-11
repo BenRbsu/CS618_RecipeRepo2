@@ -1,0 +1,4 @@
+{
+  "schema": "https://psychic-space-engine-wrvrq6jgj5x9f5qqq-3000.app.github.dev/graphql",
+  "documents": "src/api/graphql/**/*.{js,jsx}"
+}

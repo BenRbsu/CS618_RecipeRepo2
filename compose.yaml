@@ -4,21 +4,26 @@ services:
     image: mongo
     ports:
       - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
   blog-backend:
     build: backend/
     environment:
       - PORT=3001
-      - DATABASE_URL=mongodb://blog-database:27017/blog
+      - DATABASE_URL=mongodb://cookbook-database:27017/cookbook
     ports:
       - '3001:3001'
     depends_on:
-      - blog-database
+      - cookbook-database
   blog-frontend:
     build:
       context: .
       args:
-        VITE_BACKEND_URL: https://ideal-space-cod-jjrjp6wqw56r3vvx-3001.app.github.dev/api/v1
+        VITE_BACKEND_URL: https://psychic-space-engine-wrvrq6jgj5x9f5qqq-3000.app.github.dev/api/v1
     ports:
       - '3000:80'
     depends_on:
-      - blog-backend
+      - cookbook-backend
+
+  volumes:
+    mongodb_data:
